@@ -1,0 +1,23 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="createTableWords" author="artem">
+        <createTable tableName="words">
+            <column name="word" type="text">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="translate" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="language" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="occurrences" type="integer"/>
+            <column name="correct_replies" type="integer"/>
+            <column name="addition_date" type="date"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

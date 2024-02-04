@@ -1,0 +1,31 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="createJoinTable" author="artem">
+        <createTable tableName="user_words">
+            <column name="user" type="integer">
+                <constraints nullable="false"
+                             referencedTableName="users"
+                             referencedColumnNames="chat_id"
+                             foreignKeyName="fk_users_user_words"/>
+            </column>
+            <column name="word" type="text">
+                <constraints nullable="false"
+                             referencedTableName="words"
+                             referencedColumnNames="word"
+                             foreignKeyName="fk_words_user_words"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="addPK" author="artem">
+        <addPrimaryKey tableName="user_words" columnNames="user, word"/>
+    </changeSet>
+
+    <changeSet id="renameColumnUser" author="artem">
+        <renameColumn tableName="user_words" oldColumnName="user" newColumnName="chat_id"/>
+    </changeSet>
+
+</databaseChangeLog>

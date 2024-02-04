@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  bot:
+    image: suzumego/words-training-bot:v2
+    ports:
+      - 8080:8080
+  api:
+    image: suzumego/words-training:v3
+    ports:
+      - 8081:8081
+  translator:
+    image: suzumego/translator:v1
+    ports:
+      - 5000:5000
+    depends_on:
+      - api
