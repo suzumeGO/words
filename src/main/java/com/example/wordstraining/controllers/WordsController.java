@@ -1,10 +1,13 @@
 package com.example.wordstraining.controllers;
 
 import com.example.wordstraining.DTO.WordDTO;
+import com.example.wordstraining.DTO.WordsListDTO;
 import com.example.wordstraining.entities.Word;
 import com.example.wordstraining.mappers.WordsEntityToDtoMapper;
 import com.example.wordstraining.services.UsersService;
 import com.example.wordstraining.services.WordsService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,8 +27,12 @@ public class WordsController {
     }
 
     @GetMapping("/list")
-    public List<WordDTO> getWords(@RequestParam long chatId, @RequestParam String lang) {
-        return wordsMapper.entityToDtoList(wordsService.getWords(chatId, lang));
+    public WordsListDTO getWords(@RequestParam long chatId,
+                                 @RequestParam String lang,
+                                 @RequestParam(defaultValue = "1") int page) {
+        page = page - 1;
+        Pageable pageable = PageRequest.of(page, 20);
+        return wordsMapper.entityPageToWordsDTOList(wordsService.getWords(chatId, lang, pageable));
     }
 
     @PostMapping("/add")

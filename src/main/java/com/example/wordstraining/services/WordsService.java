@@ -5,8 +5,9 @@ import com.example.wordstraining.exceptions.WordAlreadyExistsException;
 import com.example.wordstraining.entities.Word;
 import com.example.wordstraining.proxy.TranslateProxy;
 import com.example.wordstraining.repo.WordsRepo;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ public class WordsService {
     private final WordsRepo wordsRepo;
     private final TranslateProxy translateProxy;
     private final UsersService usersService;
+
     public WordsService(WordsRepo wordsRepo,
                         TranslateProxy translateProxy,
                         UsersService usersService) {
@@ -23,6 +25,7 @@ public class WordsService {
         this.translateProxy = translateProxy;
         this.usersService = usersService;
     }
+
     public boolean contains(String word) {
         return wordsRepo.findByWord(word) != null;
     }
@@ -30,10 +33,14 @@ public class WordsService {
     public Word findById(String id) {
         return wordsRepo.findByWord(id);
     }
-    public List<Word> getWords(long chatId, String lang) {
-        return usersService.findUser(chatId).orElseThrow().getWords().stream()
-                .filter(word -> word.getLanguage().equals(lang))
-                .toList();
+
+    //    public List<Word> getWords(long chatId, String lang) {
+//        return usersService.findUser(chatId).orElseThrow().getWords().stream()
+//                .filter(word -> word.getLanguage().equals(lang))
+//                .toList();
+//    }
+        public Page<Word> getWords(long chatId, String lang, Pageable pageable) {
+        return wordsRepo.findAllByUser(chatId, lang, pageable);
     }
 
     public void save(Word word, long chatId) {
@@ -48,7 +55,7 @@ public class WordsService {
     public Word createWord(String stringWord, String lang) {
         Word word = new Word();
         word.setWord(stringWord);
-        word.setTranslate(translateProxy.translate(new TranslateDTO(lang,"ru", stringWord)));
+        word.setTranslate(translateProxy.translate(new TranslateDTO(lang, "ru", stringWord)));
         word.setLanguage(lang);
         word.setOccurrences(0);
         word.setUsers(new ArrayList<>());
