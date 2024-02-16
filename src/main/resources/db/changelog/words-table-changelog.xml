@@ -20,4 +20,34 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="addColumnCorrectRate" author="artem">
+        <addColumn tableName="words">
+            <column name="correct_rate" type="double precision"
+                    valueComputed=" correct_replies / nullif(occurrences,0) "/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="dropColumnCorrectRate" author="artem">
+        <dropColumn tableName="words" columnName="correct_rate"/>
+    </changeSet>
+
+    <changeSet id="reAddCorrectRate" author="artem">
+        <addColumn tableName="words">
+            <column name="correct_rate" type="double precision"
+                    valueComputed="coalesce(correct_replies / nullif(occurrences,0), 0)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="changeDataTypeCorrectRate" author="artem">
+        <modifyDataType tableName="words" columnName="correct_rate" newDataType="real"/>
+    </changeSet>
+
+    <changeSet id="reAddCorrectRateAgain" author="artem">
+        <addColumn tableName="words">
+            <column name="correct_rate" type="numeric(5,4)"
+                    defaultValue="0"/>
+        </addColumn>
+    </changeSet>
+
+
 </databaseChangeLog>

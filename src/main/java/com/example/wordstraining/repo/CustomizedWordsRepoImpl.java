@@ -7,7 +7,6 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -28,6 +27,32 @@ public class CustomizedWordsRepoImpl implements CustomizedWordsRepo<Word> {
                 .setMaxResults(pageable.getPageSize())
                 .getResultList();
         return new PageImpl<>(result, pageable, wordsTotal);
+    }
+    @Override
+    public List<Word> findWeakest(long user, String lang) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        User u = findUser(user);
+        CriteriaQuery<Word> criteriaQuery = criteriaBuilder.createQuery(Word.class);
+        Root<Word> word = criteriaQuery.from(Word.class);
+        CriteriaQuery<Word> query = criteriaQuery
+                .select(word)
+                .where(criteriaBuilder.and(criteriaBuilder.equal(word.get("language"), lang),
+                        criteriaBuilder.isMember(u, word.get("users"))))
+                .orderBy(criteriaBuilder.asc(word.get("correctRate")))
+                .orderBy(criteriaBuilder.asc(word.get("occurrences")));
+        return entityManager.createQuery(query).setMaxResults(20).getResultList();
+    }
+    @Override
+    public List<String> findAllTranslations(long user, String lang) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        User u = findUser(user);
+        CriteriaQuery<String> criteriaQuery = criteriaBuilder.createQuery(String.class);
+        Root<Word> word = criteriaQuery.from(Word.class);
+        CriteriaQuery<String> query = criteriaQuery
+                .select(word.get("translate"))
+                .where(criteriaBuilder.and(criteriaBuilder.equal(word.get("language"), lang),
+                        criteriaBuilder.isMember(u, word.get("users")))).distinct(true);
+        return entityManager.createQuery(query).getResultList();
     }
 
     private TypedQuery<Word> createQuery(long user, String lang) {

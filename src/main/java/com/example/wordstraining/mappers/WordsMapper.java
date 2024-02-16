@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public interface WordsEntityToDtoMapper {
+public interface WordsMapper {
     WordDTO entityToDto(Word word);
     List<WordDTO> entityToDtoList(List<Word> words);
     @Mapping(target = "pagination", expression = "java(getPagination(words))")

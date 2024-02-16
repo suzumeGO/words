@@ -21,6 +21,8 @@ public class WordDTO {
     private int occurrences;
     @JsonProperty("correct_replies")
     private int correctReplies;
+    @JsonProperty("correct_rate")
+    private double correctRate;
     @JsonProperty("addition_date")
     private LocalDate additionDate;
 

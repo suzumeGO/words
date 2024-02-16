@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Entity(name = "words")
 @Data
@@ -24,12 +25,14 @@ public class Word {
     private int occurrences;
     @Column(name = "correct_replies")
     private int correctReplies;
+    @Column(name = "correct_rate")
+    private double correctRate;
     @Column(name = "addition_date")
     private LocalDate additionDate;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_words",
     joinColumns = @JoinColumn(name = "word"),
     inverseJoinColumns = @JoinColumn(name = "chat_id"))
-    private List<User> users;
+    private Set<User> users;
 
 }
