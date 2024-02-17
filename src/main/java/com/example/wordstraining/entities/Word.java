@@ -21,18 +21,10 @@ public class Word {
     private String translate;
     @Column(name = "language")
     private String language;
-    @Column(name = "occurrences")
-    private int occurrences;
-    @Column(name = "correct_replies")
-    private int correctReplies;
-    @Column(name = "correct_rate")
-    private double correctRate;
-    @Column(name = "addition_date")
-    private LocalDate additionDate;
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_words",
-    joinColumns = @JoinColumn(name = "word"),
-    inverseJoinColumns = @JoinColumn(name = "chat_id"))
-    private Set<User> users;
+
+    @OneToMany(fetch = FetchType.LAZY,
+            mappedBy = "word",
+            cascade = CascadeType.ALL)
+    private Set<UserWord> userWords;
 
 }
