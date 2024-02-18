@@ -16,11 +16,11 @@ public class UserWord {
     @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("chatId")
     @JoinColumn(name = "chat_id")
-    private long chatId;
+    private User chatId;
     @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("word")
     @JoinColumn(name = "word")
-    private String word;
+    private Word word;
     @Column(name = "occurrences")
     private int occurrences;
     @Column(name = "correct_replies")

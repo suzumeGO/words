@@ -2,6 +2,8 @@ package com.example.wordstraining.services;
 
 import com.example.wordstraining.DTO.QuizDTO;
 import com.example.wordstraining.DTO.TranslateDTO;
+import com.example.wordstraining.entities.UserWord;
+import com.example.wordstraining.entities.UserWordKey;
 import com.example.wordstraining.entities.Word;
 import com.example.wordstraining.exceptions.WordAlreadyExistsException;
 import com.example.wordstraining.mappers.WordsMapper;
@@ -12,20 +14,25 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class WordsService {
     private final WordsRepo wordsRepo;
     private final TranslateProxy translateProxy;
     private final UsersService usersService;
+    private final UserWordsService userWordsService;
     private final WordsMapper mapper;
 
     public WordsService(WordsRepo wordsRepo,
                         TranslateProxy translateProxy,
                         UsersService usersService,
+                        UserWordsService userWordsService,
                         WordsMapper mapper) {
         this.wordsRepo = wordsRepo;
+        this.userWordsService = userWordsService;
         this.translateProxy = translateProxy;
         this.usersService = usersService;
         this.mapper = mapper;
@@ -42,10 +49,6 @@ public class WordsService {
 
     public Page<Word> getWords(long chatId, String lang, Pageable pageable) {
         return wordsRepo.findAllByUser(chatId, lang, pageable);
-    }
-
-    public List<String> getTranslations(long chatId, String lang) {
-        return wordsRepo.findAllTranslations(chatId, lang);
     }
 
     public QuizDTO getWeakestQuiz(long chatId, String lang) {
@@ -73,12 +76,24 @@ public class WordsService {
     }
 
     public void save(Word word, long chatId) {
-        word.getUsers().add(usersService.findUser(chatId).orElseThrow());
-        try {
-            wordsRepo.save(word);
-        } catch (Exception e) {
+        wordsRepo.save(word);
+        if (userWordsService.findByKey(new UserWordKey(chatId, word.getWord())).isEmpty()) {
+            userWordsService.save(createUserWord(word, chatId));
+        } else {
             throw new WordAlreadyExistsException();
         }
+    }
+
+    private UserWord createUserWord(Word word, long chatId) {
+        UserWord userWord = new UserWord();
+        userWord.setWord(wordsRepo.findByWord(word.getWord()));
+        userWord.setOccurrences(0);
+        userWord.setCorrectRate(0);
+        userWord.setId(new UserWordKey(chatId, word.getWord()));
+        userWord.setCorrectReplies(0);
+        userWord.setChatId(usersService.findUser(chatId).get());
+        userWord.setAdditionDate(LocalDate.now());
+        return userWord;
     }
 
     public Word createWord(String stringWord, String lang) {
@@ -86,10 +101,6 @@ public class WordsService {
         word.setWord(stringWord);
         word.setTranslate(translateProxy.translate(new TranslateDTO(lang, "ru", stringWord)));
         word.setLanguage(lang);
-        word.setOccurrences(0);
-        word.setUsers(new HashSet<>());
-        word.setCorrectReplies(0);
-        word.setAdditionDate(LocalDate.now());
         return word;
     }
 }

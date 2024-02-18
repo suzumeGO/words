@@ -37,9 +37,9 @@ public class CustomizedWordsRepoImpl implements CustomizedWordsRepo<Word> {
         CriteriaQuery<Word> query = criteriaQuery
                 .select(word)
                 .where(criteriaBuilder.and(criteriaBuilder.equal(word.get("language"), lang),
-                        criteriaBuilder.isMember(u, word.get("users"))))
-                .orderBy(criteriaBuilder.asc(word.get("correctRate")))
-                .orderBy(criteriaBuilder.asc(word.get("occurrences")));
+                        criteriaBuilder.equal(word.get("userWords").get("chatId"), u)))
+                .orderBy(criteriaBuilder.asc(word.get("userWords").get("correctRate")))
+                .orderBy(criteriaBuilder.asc(word.get("userWords").get("occurrences")));
         return entityManager.createQuery(query).setMaxResults(20).getResultList();
     }
     @Override
@@ -50,8 +50,9 @@ public class CustomizedWordsRepoImpl implements CustomizedWordsRepo<Word> {
         Root<Word> word = criteriaQuery.from(Word.class);
         CriteriaQuery<String> query = criteriaQuery
                 .select(word.get("translate"))
+                .distinct(true)
                 .where(criteriaBuilder.and(criteriaBuilder.equal(word.get("language"), lang),
-                        criteriaBuilder.isMember(u, word.get("users")))).distinct(true);
+                        criteriaBuilder.equal(word.get("userWords").get("chatId"), u)));
         return entityManager.createQuery(query).getResultList();
     }
 
@@ -63,7 +64,7 @@ public class CustomizedWordsRepoImpl implements CustomizedWordsRepo<Word> {
         CriteriaQuery<Word> query = criteriaQuery
                 .select(word)
                 .where(criteriaBuilder.and(criteriaBuilder.equal(word.get("language"), lang),
-                         criteriaBuilder.isMember(u, word.get("users"))));
+                        criteriaBuilder.equal(word.get("userWords").get("chatId"), u)));
         return entityManager.createQuery(query);
     }
 
@@ -75,7 +76,7 @@ public class CustomizedWordsRepoImpl implements CustomizedWordsRepo<Word> {
         CriteriaQuery<Long> query = criteriaQuery
                 .select(criteriaBuilder.count(word))
                 .where(criteriaBuilder.and(criteriaBuilder.equal(word.get("language"), lang),
-                        criteriaBuilder.isMember(u, word.get("users"))));
+                        criteriaBuilder.equal(word.get("userWords").get("chatId"), u)));
         return entityManager.createQuery(query);
     }
 

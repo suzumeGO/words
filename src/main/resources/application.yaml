@@ -12,7 +12,7 @@ feign:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/words
+    url: jdbc:postgresql://localhost:5432/words_new
     username: postgres
     password: 3817!
   jpa:

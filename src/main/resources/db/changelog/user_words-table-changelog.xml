@@ -28,4 +28,20 @@
         <renameColumn tableName="user_words" oldColumnName="user" newColumnName="chat_id"/>
     </changeSet>
 
+    <changeSet id="transferColumns" author="artem">
+        <addColumn tableName="user_words">
+            <column name="correct_rate" type="numeric(5,4)"
+                    defaultValue="0"/>
+            <column name="occurrences" type="integer"/>
+            <column name="correct_replies" type="integer"/>
+            <column name="addition_date" type="date"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="addNotNullConst" author="artem">
+        <addNotNullConstraint tableName="user_words" columnName="occurrences"/>
+        <addNotNullConstraint tableName="user_words" columnName="correct_replies"/>
+        <addNotNullConstraint tableName="user_words" columnName="addition_date"/>
+    </changeSet>
+
 </databaseChangeLog>

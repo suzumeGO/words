@@ -3,8 +3,12 @@ package com.example.wordstraining.controllers;
 import com.example.wordstraining.DTO.QuizDTO;
 import com.example.wordstraining.DTO.WordDTO;
 import com.example.wordstraining.DTO.WordsListDTO;
+import com.example.wordstraining.entities.User;
+import com.example.wordstraining.entities.UserWord;
+import com.example.wordstraining.entities.UserWordKey;
 import com.example.wordstraining.entities.Word;
 import com.example.wordstraining.mappers.WordsMapper;
+import com.example.wordstraining.services.UserWordsService;
 import com.example.wordstraining.services.UsersService;
 import com.example.wordstraining.services.WordsService;
 import org.springframework.data.domain.PageRequest;
@@ -18,13 +22,16 @@ public class WordsController {
     private static final int PAGE_SIZE = 40;
     private final WordsService wordsService;
     private final UsersService usersService;
+    private final UserWordsService userWordsService;
     private final WordsMapper wordsMapper;
     public WordsController(WordsService wordsService,
                            UsersService usersService,
+                           UserWordsService userWordsService,
                            WordsMapper wordsMapper) {
         this.wordsService = wordsService;
         this.wordsMapper = wordsMapper;
         this.usersService = usersService;
+        this.userWordsService = userWordsService;
     }
 
     @GetMapping("/list")
@@ -54,11 +61,11 @@ public class WordsController {
     }
     @PostMapping("/updateWord")
     public void updateWord(@RequestBody WordDTO word, @RequestParam long chatId) {
-        Word w = wordsService.findById(word.getWord());
-        w.setOccurrences(word.getOccurrences());
-        w.setCorrectReplies(word.getCorrectReplies());
-        w.setCorrectRate(word.getCorrectRate());
-        wordsService.save(w, chatId);
+        UserWord uw = userWordsService.findByKey(new UserWordKey(chatId, word.getWord())).orElseThrow();
+        uw.setOccurrences(word.getOccurrences());
+        uw.setCorrectReplies(word.getCorrectReplies());
+        uw.setCorrectRate(word.getCorrectRate());
+        userWordsService.save(uw);
     }
     @GetMapping("/quiz")
     public QuizDTO getQuiz(@RequestParam long chatId) {

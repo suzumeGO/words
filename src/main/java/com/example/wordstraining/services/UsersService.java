@@ -5,6 +5,7 @@ import com.example.wordstraining.repo.UsersRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Optional;
 
 @Service
@@ -17,7 +18,7 @@ public class UsersService {
     }
     public void save(long chatId) {
         if (usersRepo.findById(chatId).isEmpty()) {
-            usersRepo.save(new User(chatId, new ArrayList<>()));
+            usersRepo.save(new User(chatId, new HashSet<>()));
         }
     }
     public Optional<User> findUser(long id) {

@@ -49,5 +49,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="removeColumns" author="artem">
+        <dropColumn tableName="words" columnName="occurrences"/>
+        <dropColumn tableName="words" columnName="correct_rate"/>
+        <dropColumn tableName="words" columnName="correct_replies"/>
+        <dropColumn tableName="words" columnName="addition_date"/>
+    </changeSet>
+
 
 </databaseChangeLog>

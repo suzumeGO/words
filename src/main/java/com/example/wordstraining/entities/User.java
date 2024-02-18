@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.Set;
 
 @Entity(name = "users")
@@ -17,7 +16,7 @@ public class User {
     @Column(name = "chat_id")
     private long chatId;
     @OneToMany(fetch = FetchType.LAZY,
-            mappedBy = "chat_id",
+            mappedBy = "chatId",
             cascade = CascadeType.ALL)
     private Set<UserWord> userWords;
 
