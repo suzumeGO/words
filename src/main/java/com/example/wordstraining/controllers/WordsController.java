@@ -60,8 +60,8 @@ public class WordsController {
         w.setCorrectRate(word.getCorrectRate());
         wordsService.save(w, chatId);
     }
-    @GetMapping("/quiz")
-    public QuizDTO getQuiz(@RequestParam long chatId) {
+    @GetMapping("/recentlyAdded")
+    public QuizDTO getRecentlyAddedQuiz(@RequestParam long chatId) {
         return null;
     }
 }
