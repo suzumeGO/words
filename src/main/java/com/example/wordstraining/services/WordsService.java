@@ -2,6 +2,7 @@ package com.example.wordstraining.services;
 
 import com.example.wordstraining.DTO.QuizDTO;
 import com.example.wordstraining.DTO.TranslateDTO;
+import com.example.wordstraining.DTO.WordDTO;
 import com.example.wordstraining.QuizType;
 import com.example.wordstraining.entities.UserWord;
 import com.example.wordstraining.entities.UserWordKey;
@@ -57,7 +58,7 @@ public class WordsService {
         List<QuizDTO.QuizVariant> words = new ArrayList<>();
         for (Word word : wordsRepo.findWeakest(chatId, lang)) {
             QuizDTO.QuizVariant quizVariant = new QuizDTO.QuizVariant();
-            quizVariant.setWord(mapper.entityToDto(word));
+            quizVariant.setWord(getWordDTO(chatId, word));
             quizVariant.setTranslations(getTranslationVariants(translations, word, QuizType.WEAKEST));
             words.add(quizVariant);
         }
@@ -69,12 +70,24 @@ public class WordsService {
         List<QuizDTO.QuizVariant> translations = new ArrayList<>();
         for (Word word : wordsRepo.findWeakest(chatId, lang)) {
             QuizDTO.QuizVariant quizVariant = new QuizDTO.QuizVariant();
-            quizVariant.setWord(mapper.entityToDto(word));
+            quizVariant.setWord(getWordDTO(chatId, word));
             quizVariant.setTranslations(getTranslationVariants(words, word, QuizType.REVERSE_WEAKEST));
             translations.add(quizVariant);
         }
         return new QuizDTO(translations, QuizType.REVERSE_WEAKEST);
     }
+
+    private WordDTO getWordDTO(long chatId, Word word) {
+        UserWord uw = userWordsService.findByKey(new UserWordKey(chatId, word.getWord())).orElseThrow();
+        WordDTO wordDTO = mapper.entityToDto(word);
+        wordDTO.setAdditionDate(uw.getAdditionDate());
+        wordDTO.setOccurrences(uw.getOccurrences());
+        wordDTO.setCorrectRate(uw.getCorrectRate());
+        wordDTO.setCorrectReplies(uw.getCorrectReplies());
+        return wordDTO;
+    }
+
+
 
     private List<String> getTranslationVariants(List<String> translations, Word word, QuizType quizType) {
         List<String> trans = new ArrayList<>(4);
