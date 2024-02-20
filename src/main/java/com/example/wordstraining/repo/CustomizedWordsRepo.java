@@ -9,6 +9,6 @@ import java.util.List;
 public interface CustomizedWordsRepo<T>  {
     Page<T> findAllByUser(long user, String lang, Pageable pageable);
     List<String> findAllTranslations(long user, String lang);
-
     List<Word> findWeakest(long user, String lang);
+    List<String> findAllWords(long user, String lang);
 }

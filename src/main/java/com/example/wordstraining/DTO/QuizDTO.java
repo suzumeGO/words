@@ -1,5 +1,6 @@
 package com.example.wordstraining.DTO;
 
+import com.example.wordstraining.QuizType;
 import com.example.wordstraining.entities.Word;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -15,6 +16,8 @@ import java.util.Map;
 public class QuizDTO {
     @JsonProperty("quiz_variants")
     private List<QuizVariant> quizVariants;
+    @JsonProperty("type")
+    private QuizType type;
     @Data
     public static class QuizVariant {
         @JsonProperty("word")

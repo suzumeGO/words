@@ -2,6 +2,7 @@ package com.example.wordstraining.services;
 
 import com.example.wordstraining.DTO.QuizDTO;
 import com.example.wordstraining.DTO.TranslateDTO;
+import com.example.wordstraining.QuizType;
 import com.example.wordstraining.entities.UserWord;
 import com.example.wordstraining.entities.UserWordKey;
 import com.example.wordstraining.entities.Word;
@@ -57,15 +58,32 @@ public class WordsService {
         for (Word word : wordsRepo.findWeakest(chatId, lang)) {
             QuizDTO.QuizVariant quizVariant = new QuizDTO.QuizVariant();
             quizVariant.setWord(mapper.entityToDto(word));
-            quizVariant.setTranslations(getTranslationVariants(translations, word));
+            quizVariant.setTranslations(getTranslationVariants(translations, word, QuizType.WEAKEST));
             words.add(quizVariant);
         }
-        return new QuizDTO(words);
+        return new QuizDTO(words, QuizType.WEAKEST);
     }
 
-    private List<String> getTranslationVariants(List<String> translations, Word word) {
+    public QuizDTO getReverseQuiz(long chatId, String lang) {
+        List<String> words = wordsRepo.findAllWords(chatId, lang);
+        List<QuizDTO.QuizVariant> translations = new ArrayList<>();
+        for (Word word : wordsRepo.findWeakest(chatId, lang)) {
+            QuizDTO.QuizVariant quizVariant = new QuizDTO.QuizVariant();
+            quizVariant.setWord(mapper.entityToDto(word));
+            quizVariant.setTranslations(getTranslationVariants(words, word, QuizType.REVERSE_WEAKEST));
+            translations.add(quizVariant);
+        }
+        return new QuizDTO(translations, QuizType.REVERSE_WEAKEST);
+    }
+
+    private List<String> getTranslationVariants(List<String> translations, Word word, QuizType quizType) {
         List<String> trans = new ArrayList<>(4);
-        trans.add(word.getTranslate());
+        if (quizType.equals(QuizType.WEAKEST)) {
+            trans.add(word.getTranslate());
+        }
+        if (quizType.equals(QuizType.REVERSE_WEAKEST)) {
+            trans.add(word.getWord());
+        }
         trans.add(translations.get(0));
         Collections.shuffle(translations);
         trans.add(translations.get(0));

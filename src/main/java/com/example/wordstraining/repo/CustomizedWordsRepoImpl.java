@@ -56,6 +56,19 @@ public class CustomizedWordsRepoImpl implements CustomizedWordsRepo<Word> {
         return entityManager.createQuery(query).getResultList();
     }
 
+    public List<String> findAllWords(long user, String lang) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        User u = findUser(user);
+        CriteriaQuery<String> criteriaQuery = criteriaBuilder.createQuery(String.class);
+        Root<Word> word = criteriaQuery.from(Word.class);
+        CriteriaQuery<String> query = criteriaQuery
+                .select(word.get("word"))
+                .where(criteriaBuilder.and(criteriaBuilder.equal(word.get("language"), lang),
+                        criteriaBuilder.equal(word.get("userWords").get("chatId"), u)));
+        return entityManager.createQuery(query).getResultList();
+    }
+
+
     private TypedQuery<Word> createQuery(long user, String lang) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         User u = findUser(user);
